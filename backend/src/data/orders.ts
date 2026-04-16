@@ -1,0 +1,68 @@
+import { Order } from '../types';
+
+export const orders: Order[] = [
+  {
+    id: '1',
+    customerName: 'Ana García',
+    status: 'pending',
+    amount: 150.0,
+    paymentMethod: 'credit_card',
+    incidentReported: false,
+  },
+  {
+    id: '2',
+    customerName: 'Carlos López',
+    status: 'paid',
+    amount: 320.5,
+    paymentMethod: 'cash',
+    incidentReported: true,
+  },
+  {
+    id: '3',
+    customerName: null,
+    status: 'pending',
+    amount: 75.0,
+    paymentMethod: 'debit_card',
+    incidentReported: false,
+  },
+  {
+    id: '4',
+    customerName: 'María Rodríguez',
+    status: 'cancelled',
+    amount: 200.0,
+    paymentMethod: 'credit_card',
+    incidentReported: true,
+  },
+  {
+    id: '5',
+    customerName: 'Pedro Martínez',
+    status: 'paid',
+    amount: 450.0,
+    paymentMethod: 'cash',
+    incidentReported: false,
+  },
+  {
+    id: '6',
+    customerName: 'Laura Sánchez',
+    status: 'pending',
+    amount: 89.99,
+    paymentMethod: 'debit_card',
+    incidentReported: true,
+  },
+  {
+    id: '7',
+    customerName: 'José Torres',
+    status: 'cancelled',
+    amount: 175.0,
+    paymentMethod: 'transfer',
+    incidentReported: false,
+  },
+  {
+    id: '8',
+    customerName: 'Sofía Ramírez',
+    status: 'pending',
+    amount: 540.0,
+    paymentMethod: 'credit_card',
+    incidentReported: true,
+  },
+];
