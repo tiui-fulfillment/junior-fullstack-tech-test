@@ -1,6 +1,6 @@
 import { Order } from '../types/order';
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export async function fetchOrders(status?: string): Promise<Order[]> {
   const url = status ? `${BASE_URL}/orders?status=${status}` : `${BASE_URL}/orders`;

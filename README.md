@@ -120,3 +120,144 @@ No es necesario que completes todo. Prioriza según tu criterio y explica qué d
 - ❌ No agregues librerías innecesarias
 - ✅ Trabaja dentro del código existente
 - ✅ Si usas IA, decláralo en `RESPUESTAS.md`
+
+---
+
+## Despliegue en Google Cloud
+
+El proyecto incluye configuración lista para desplegar **backend y frontend en Cloud Run** usando **Cloud Build** como pipeline CI/CD.
+
+### Arquitectura
+
+```
+Cloud Build trigger (push a rama)
+  ├── build + push  →  backend  image  →  Cloud Run (backend)
+  └── build + push  →  frontend image  →  Cloud Run (frontend, nginx)
+```
+
+### Archivos relevantes
+
+| Archivo | Descripción |
+|---|---|
+| `cloudbuild.yaml` | Pipeline completo de Cloud Build |
+| `backend/Dockerfile` | Imagen Node.js para el backend |
+| `frontend/Dockerfile` | Imagen nginx con build estático de Vite |
+| `frontend/nginx.conf` | Configuración nginx para SPA |
+| `backend/.env.example` | Variables de entorno del backend |
+| `frontend/.env.example` | Variables de entorno del frontend |
+
+### Variables de entorno
+
+| Variable | Descripción |
+|---|---|
+| `PORT` | Puerto del servidor (Cloud Run lo inyecta automáticamente) |
+| `CORS_ORIGIN` | URL pública del frontend (ej. `https://frontend-xyz.run.app`) |
+| `VITE_API_URL` | URL pública del backend, inyectada en build del frontend (ej. `https://backend-xyz.run.app/api`) |
+
+### Pasos de configuración inicial (una sola vez)
+
+#### 1. Requisitos previos
+
+```bash
+# Asegúrate de tener gcloud CLI configurado y autenticado
+gcloud auth login
+gcloud config set project TU_PROJECT_ID
+```
+
+#### 2. Habilitar APIs necesarias
+
+```bash
+gcloud services enable \
+  cloudbuild.googleapis.com \
+  run.googleapis.com \
+  artifactregistry.googleapis.com
+```
+
+#### 3. Crear repositorio en Artifact Registry
+
+```bash
+gcloud artifacts repositories create cloud-run-source-deploy \
+  --repository-format=docker \
+  --location=us-central1 \
+  --description="Imágenes para Cloud Run"
+```
+
+#### 4. Dar permisos a la cuenta de servicio de Cloud Build
+
+```bash
+PROJECT_NUMBER=$(gcloud projects describe TU_PROJECT_ID --format='value(projectNumber)')
+
+# Permiso para desplegar en Cloud Run
+gcloud projects add-iam-policy-binding TU_PROJECT_ID \
+  --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+  --role="roles/run.admin"
+
+# Permiso para actuar como cuenta de servicio de Cloud Run
+gcloud projects add-iam-policy-binding TU_PROJECT_ID \
+  --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+```
+
+#### 5. Crear el trigger en Cloud Build
+
+En [Google Cloud Console → Cloud Build → Triggers](https://console.cloud.google.com/cloud-build/triggers):
+
+1. Haz clic en **Crear trigger**
+2. Conecta el repositorio GitHub (`tiui-fulfillment/junior-fullstack-tech-test`)
+3. Configura el evento (ej. push a `main`)
+4. En **Configuración**, selecciona **Archivo de configuración de Cloud Build** → `cloudbuild.yaml`
+5. En **Sustituciones**, agrega:
+
+| Variable | Valor |
+|---|---|
+| `_REGION` | `us-central1` |
+| `_BACKEND_SERVICE` | `backend` |
+| `_FRONTEND_SERVICE` | `frontend` |
+| `_BACKEND_IMAGE` | `us-central1-docker.pkg.dev/TU_PROJECT_ID/cloud-run-source-deploy/backend` |
+| `_FRONTEND_IMAGE` | `us-central1-docker.pkg.dev/TU_PROJECT_ID/cloud-run-source-deploy/frontend` |
+| `_FRONTEND_PUBLIC_API_URL` | *(URL del backend — ver paso 6)* |
+| `_CORS_ORIGIN` | *(URL del frontend — ver paso 6)* |
+
+#### 6. Primer despliegue y obtención de URLs
+
+La primera vez, ejecuta el pipeline **sin** `_FRONTEND_PUBLIC_API_URL` y `_CORS_ORIGIN` para obtener las URLs de Cloud Run:
+
+```bash
+# Deploy manual inicial (opcional, para obtener URLs)
+gcloud run deploy backend \
+  --image=us-central1-docker.pkg.dev/TU_PROJECT_ID/cloud-run-source-deploy/backend \
+  --region=us-central1 --allow-unauthenticated --port=3000
+
+gcloud run deploy frontend \
+  --image=us-central1-docker.pkg.dev/TU_PROJECT_ID/cloud-run-source-deploy/frontend \
+  --region=us-central1 --allow-unauthenticated --port=8080
+```
+
+Obtén las URLs asignadas:
+
+```bash
+gcloud run services describe backend --region=us-central1 --format='value(status.url)'
+gcloud run services describe frontend --region=us-central1 --format='value(status.url)'
+```
+
+Luego **actualiza las sustituciones** del trigger con las URLs reales y vuelve a ejecutarlo.
+
+### Verificación
+
+```bash
+# Verificar que el backend responde
+curl https://TU_BACKEND_URL.run.app/api/orders
+
+# Verificar que el frontend carga
+curl -I https://TU_FRONTEND_URL.run.app
+```
+
+### Cómo funciona el pipeline
+
+1. **Cloud Build** detecta un push al repositorio
+2. Construye la imagen Docker del **backend** (Node.js, TypeScript compilado)
+3. Construye la imagen Docker del **frontend** (Vite build + nginx), inyectando `VITE_API_URL` en build time
+4. Sube ambas imágenes a **Artifact Registry**
+5. Despliega **backend** en Cloud Run con la variable `CORS_ORIGIN`
+6. Despliega **frontend** en Cloud Run (nginx sirviendo assets estáticos)
+7. Ambos servicios quedan con URL pública accesible sin autenticación
