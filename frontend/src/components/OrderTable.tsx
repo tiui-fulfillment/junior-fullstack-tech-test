@@ -1,4 +1,5 @@
 import { Order } from '../types/order';
+import Badge from './Badge/Badge';
 
 interface Props {
   orders: Order[];
@@ -36,11 +37,13 @@ export default function OrderTable({ orders, onMarkAsPaid }: Props) {
         {orders.map((order) => (
           <tr key={order.id}>
             <td>{order.id}</td>
-            <td>{(order.customerName as string).toUpperCase()}</td>
+            <td>{(order.customerName?.toUpperCase() ?? '--------------')}</td>
             <td>{statusLabel[order.status] ?? order.status}</td>
             <td>${order.amount.toFixed(2)}</td>
             <td>{paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}</td>
-            <td>{order.incidentReported ? 'Sí' : 'No'}</td>
+            <td>
+              <Badge label={order.incidentReported ? 'Incidencia' : 'Sin incidencia'} variant={order.incidentReported ? 'danger' : 'success'}></Badge>
+            </td>
             <td>
               {order.status === 'pending' && (
                 <button onClick={() => onMarkAsPaid(order.id)}>
