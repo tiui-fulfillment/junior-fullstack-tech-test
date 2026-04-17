@@ -4,8 +4,9 @@ import ordersRouter from './routes/orders';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
-app.use(cors());
+app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
 
 app.use('/api/orders', ordersRouter);
