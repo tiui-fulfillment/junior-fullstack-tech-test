@@ -1,4 +1,4 @@
-import { Order } from '../types/order';
+import { Order } from "../types/order";
 
 interface Props {
   orders: Order[];
@@ -6,16 +6,16 @@ interface Props {
 }
 
 const statusLabel: Record<string, string> = {
-  pending: 'Pendiente',
-  paid: 'Pagado',
-  cancelled: 'Cancelado',
+  pending: "Pendiente",
+  paid: "Pagado",
+  cancelled: "Cancelado",
 };
 
 const paymentMethodLabel: Record<string, string> = {
-  credit_card: 'Tarjeta de crédito',
-  debit_card: 'Tarjeta de débito',
-  cash: 'Efectivo',
-  transfer: 'Transferencia',
+  credit_card: "Tarjeta de crédito",
+  debit_card: "Tarjeta de débito",
+  cash: "Efectivo",
+  transfer: "Transferencia",
 };
 
 export default function OrderTable({ orders, onMarkAsPaid }: Props) {
@@ -36,13 +36,25 @@ export default function OrderTable({ orders, onMarkAsPaid }: Props) {
         {orders.map((order) => (
           <tr key={order.id}>
             <td>{order.id}</td>
-            <td>{(order.customerName as string).toUpperCase()}</td>
+            <td>
+              {order.customerName
+                ? (order.customerName as string).toUpperCase()
+                : "***"}
+            </td>
             <td>{statusLabel[order.status] ?? order.status}</td>
             <td>${order.amount.toFixed(2)}</td>
-            <td>{paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}</td>
-            <td>{order.incidentReported ? 'Sí' : 'No'}</td>
             <td>
-              {order.status === 'pending' && (
+              {paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}
+            </td>
+            <td>
+              {order.incidentReported ? (
+                <span style={{ color: "red" }}>⚠</span>
+              ) : (
+                "-"
+              )}
+            </td>
+            <td>
+              {order.status === "pending" && (
                 <button onClick={() => onMarkAsPaid(order.id)}>
                   Marcar como pagado
                 </button>
