@@ -21,8 +21,8 @@ substitutions:
   _FRONTEND_SERVICE: frontend
   _BACKEND_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/backend
   _FRONTEND_IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/frontend
-  _FRONTEND_PUBLIC_API_URL: https://backend-replace-me.run.app/api
-  _CORS_ORIGIN: https://frontend-replace-me.run.app
+  _FRONTEND_PUBLIC_API_URL: https://REPLACE_WITH_BACKEND_URL.run.app/api
+  _CORS_ORIGIN: https://REPLACE_WITH_FRONTEND_URL.run.app
 
 steps:
   # ── Backend ────────────────────────────────────────────────────────────────
