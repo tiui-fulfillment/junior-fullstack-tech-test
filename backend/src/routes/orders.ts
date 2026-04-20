@@ -30,6 +30,9 @@ router.patch('/:id/pay', (req: Request, res: Response) => {
   if (!order) {
     return res.status(404).json({ error: 'Pedido no encontrado' });
   }
+  if (order.status !== 'pending') {
+    return res.status(400).json({ error: 'El pedido no se puede pagar' });
+  }
 
   order.status = 'paid';
   return res.json(order);
