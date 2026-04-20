@@ -7,8 +7,11 @@ const router = Router();
 router.get('/', (req: Request, res: Response) => {
   const { status } = req.query;
 
-  if (status && typeof status === 'string') {
-    const filtered = orders.filter((o) => o.status === status);
+   if (status && typeof status === 'string') {
+    const filtered = orders.filter(
+      (o) => o.status.toLowerCase() === status.toLowerCase()
+    );
+
     return res.json(filtered);
   }
 
@@ -29,6 +32,11 @@ router.patch('/:id/pay', (req: Request, res: Response) => {
   const order = orders.find((o) => o.id === req.params.id);
   if (!order) {
     return res.status(404).json({ error: 'Pedido no encontrado' });
+  }
+  if (order.status !== 'pending') {
+    return res.status(400).json({
+       error: `No se puede pagar un pedido con estado "${order.status}"`,
+    });
   }
 
   order.status = 'paid';

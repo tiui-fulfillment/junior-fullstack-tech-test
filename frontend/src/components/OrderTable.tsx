@@ -36,17 +36,31 @@ export default function OrderTable({ orders, onMarkAsPaid }: Props) {
         {orders.map((order) => (
           <tr key={order.id}>
             <td>{order.id}</td>
-            <td>{(order.customerName as string).toUpperCase()}</td>
-            <td>{statusLabel[order.status] ?? order.status}</td>
+            <td>
+              {order.customerName?.toUpperCase() || 'SIN NOMBRE'}
+
+              {order.incidentReported && (
+  <span className="incident-badge">
+    ⚠
+  </span>
+)}
+            </td>
+            <td>
+              <span className={`status-badge status-${order.status}`}>
+                {statusLabel[order.status] ?? order.status}
+              </span>
+            </td>
             <td>${order.amount.toFixed(2)}</td>
             <td>{paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}</td>
             <td>{order.incidentReported ? 'Sí' : 'No'}</td>
-            <td>
-              {order.status === 'pending' && (
-                <button onClick={() => onMarkAsPaid(order.id)}>
-                  Marcar como pagado
-                </button>
-              )}
+            <td  className="actions-cell">
+                {order.status === 'pending' ? (
+                  <button onClick={() => onMarkAsPaid(order.id)}>
+                    Marcar como pagado
+                  </button>
+                ) : (
+                  '-'
+                )}
             </td>
           </tr>
         ))}

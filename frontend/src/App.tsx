@@ -45,8 +45,8 @@ export default function App() {
     }
   }
 
-  const filteredOrders = selectedStatus
-    ? orders.filter((o) => o.status !== selectedStatus)
+    const filteredOrders = selectedStatus
+    ? orders.filter((o) => o.status === selectedStatus)
     : orders;
 
   return (
