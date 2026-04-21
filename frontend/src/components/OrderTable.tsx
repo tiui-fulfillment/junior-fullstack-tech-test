@@ -36,7 +36,7 @@ export default function OrderTable({ orders, onMarkAsPaid }: Props) {
         {orders.map((order) => (
           <tr key={order.id}>
             <td>{order.id}</td>
-            <td>{(order.customerName as string).toUpperCase()}</td>
+            <td>{order.customerName?.toUpperCase() ?? 'SIN NOMBRE'}</td>
             <td>{statusLabel[order.status] ?? order.status}</td>
             <td>${order.amount.toFixed(2)}</td>
             <td>{paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}</td>

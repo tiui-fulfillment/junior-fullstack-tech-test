@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 // CORS_ORIGIN only needed for local dev (frontend on :5173, backend on :8080).
 // In production both are served from the same origin so CORS is not required.
-const CORS_ORIGIN = process.env.CORS_ORIGIN || false;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
 
 app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json());
