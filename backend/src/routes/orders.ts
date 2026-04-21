@@ -31,6 +31,11 @@ router.patch('/:id/pay', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Pedido no encontrado' });
   }
 
+  if (order.incidentReported) {
+    return res.status(400).json({
+      error: 'El pedido tiene una incidencia, no se puede marcar como pagado'});
+  }
+
   order.status = 'paid';
   return res.json(order);
 });
