@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Order } from './types/order';
-import { fetchOrders, markOrderAsPaid } from './api/orders';
-import OrderTable from './components/OrderTable';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Order } from "./types/order";
+import { fetchOrders, markOrderAsPaid } from "./api/orders";
+import OrderTable from "./components/OrderTable";
+import "./App.css";
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'Todos' },
-  { value: 'pending', label: 'Pendiente' },
-  { value: 'paid', label: 'Pagado' },
-  { value: 'cancelled', label: 'Cancelado' },
+  { value: "", label: "Todos" },
+  { value: "pending", label: "Pendiente" },
+  { value: "paid", label: "Pagado" },
+  { value: "cancelled", label: "Cancelado" },
 ];
 
 export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadOrders();
@@ -23,12 +23,14 @@ export default function App() {
 
   async function loadOrders() {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const data = await fetchOrders();
       setOrders(data);
     } catch {
-      setError('No se pudieron cargar los pedidos. ¿Está corriendo el backend?');
+      setError(
+        "No se pudieron cargar los pedidos. ¿Está corriendo el backend?",
+      );
     } finally {
       setLoading(false);
     }
@@ -37,16 +39,14 @@ export default function App() {
   async function handleMarkAsPaid(id: string) {
     try {
       const updated = await markOrderAsPaid(id);
-      setOrders((prev) =>
-        prev.map((o) => (o.id === updated.id ? updated : o))
-      );
+      setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)));
     } catch {
-      setError('Error al actualizar el pedido.');
+      setError("Error al actualizar el pedido.");
     }
   }
 
   const filteredOrders = selectedStatus
-    ? orders.filter((o) => o.status !== selectedStatus)
+    ? orders.filter((o) => o.status === selectedStatus)
     : orders;
 
   return (
