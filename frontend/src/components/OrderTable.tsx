@@ -42,11 +42,9 @@ export default function OrderTable({ orders, onMarkAsPaid }: Props) {
             <td>{paymentMethodLabel[order.paymentMethod] ?? order.paymentMethod}</td>
             <td>{order.incidentReported ? 'Sí' : 'No'}</td>
             <td>
-              {order.status === 'pending' && (
-                <button onClick={() => onMarkAsPaid(order.id)}>
-                  Marcar como pagado
-                </button>
-              )}
+              <button onClick={() => onMarkAsPaid(order.id)}>
+                Marcar como pagado
+              </button>
             </td>
           </tr>
         ))}

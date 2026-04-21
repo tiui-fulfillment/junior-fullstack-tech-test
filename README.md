@@ -8,6 +8,24 @@ Evaluar tu capacidad para leer código existente, identificar y corregir bugs, i
 
 ---
 
+## Variante Soporte / QA Funcional
+
+Esta variante vive en una rama separada de la prueba junior y usa la misma app como base para evaluar observación funcional, documentación y criterio de soporte sin pedir lectura de código.
+
+### Tareas sugeridas para candidatos
+
+1. Verifica si el filtro por estado muestra exactamente los pedidos esperados.
+2. Revisa si las acciones visibles en cada fila son coherentes con el estado que muestra el pedido.
+3. Propón una mejora de negocio para hacer más evidente cuándo un pedido tiene incidencia.
+
+### Restricciones para esta variante
+
+- Todo debe poder revisarse desde navegador y una URL pública.
+- No hace falta inspeccionar el backend ni leer el código para detectar los casos.
+- La meta es documentar hallazgos, impacto y pasos de reproducción con claridad.
+
+---
+
 ## Tecnologías
 
 - **Frontend:** React + TypeScript + Vite

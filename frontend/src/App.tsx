@@ -4,6 +4,12 @@ import { fetchOrders, markOrderAsPaid } from './api/orders';
 import OrderTable from './components/OrderTable';
 import './App.css';
 
+const SUPPORT_REVIEW_POINTS = [
+  'Valida si el filtro por estado coincide con los pedidos que aparecen en la tabla.',
+  'Revisa si las acciones visibles por fila son coherentes con el estado mostrado.',
+  'Anota una mejora para destacar mejor los pedidos con incidencia reportada.',
+];
+
 const STATUS_OPTIONS = [
   { value: '', label: 'Todos' },
   { value: 'pending', label: 'Pendiente' },
@@ -53,6 +59,16 @@ export default function App() {
     <div className="container">
       <h1>Gestión de Pedidos</h1>
 
+      <section className="support-brief" aria-label="Contexto de revisión soporte">
+        <p className="support-eyebrow">Variante soporte / QA funcional</p>
+        <h2>Recorre la UI y documenta lo que observas</h2>
+        <ul>
+          {SUPPORT_REVIEW_POINTS.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
+      </section>
+
       <div className="filters">
         <label htmlFor="status-filter">Filtrar por estado:</label>
         <select
@@ -67,6 +83,8 @@ export default function App() {
           ))}
         </select>
       </div>
+
+      <p className="results-summary">Pedidos visibles: {filteredOrders.length}</p>
 
       {loading && <p>Cargando pedidos...</p>}
       {error && <p className="error">{error}</p>}
